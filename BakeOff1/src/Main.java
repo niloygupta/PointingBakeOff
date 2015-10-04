@@ -78,7 +78,6 @@ public class Main extends PApplet
 		fill(0, 0, 255);
 		ellipse(userX, userY, 20, 20); //draw user cursor as a circle with a diameter of 20
 		
-		
 
 	}
 	public void keyPressed() {
@@ -146,14 +145,14 @@ public class Main extends PApplet
 	
 
 		
-		double easing = 2.7;
+		double easing = 2.5;
 
 		double newPosX = userX + easing*(mouseX - pmouseX);
 		double newPosY = userY + easing*(mouseY - pmouseY);
 		
 		
 		if(isWithinSquare(newPosX,newPosY))
-			easing = 1.2;
+			easing = 1.3;
 			
 		userX += easing*(mouseX - pmouseX); //add to userX the difference between the current mouseX and the previous mouseX
 		userY += easing*(mouseY - pmouseY);
