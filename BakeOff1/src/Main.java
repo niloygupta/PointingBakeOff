@@ -39,12 +39,12 @@ public class Main extends PApplet
 		//margin = width/3; //scale the padding with the size of the window
 		margin = width/8;
 		
-		if(first)
+		/*if(first)
 		{
 			userX = 275;
 			userY = 275;
 			first = false;
-		}
+		}*/
 		
 		
 		//background(0); //set background to black
@@ -103,9 +103,9 @@ public class Main extends PApplet
 
 	}
 	public void keyPressed() {
-		  if (key == ' ') {
+		 // if (key == ' ') {
 			  mousePressed();
-		  } 
+		  //} 
 		}
 
 	public void mousePressed() // test to see if hit was in target!
@@ -143,8 +143,8 @@ public class Main extends PApplet
 
 		trialNum++; // Increment trial number
 		
-		userX = 275;
-		userY = 275;
+		//userX = 275;
+		//userY = 275;
 	}
 
 	boolean isWithinSquare(double userX, double userY)
@@ -240,8 +240,8 @@ public class Main extends PApplet
 		double x = 250;
 		double y = 250;
 		robot.mouseMove((int)x,(int) y);
-		userX = mouseX;
-		userY = mouseY;
+		//userX = mouseX;
+		//userY = mouseY;
 	
 		
 	}
@@ -262,12 +262,15 @@ public class Main extends PApplet
 		{
 			//fill(0, 255, 255); // if so, fill cyan
 			fill(0, 255, 0);
-			if ((userX > bounds.x && userX < bounds.x + bounds.width) && (userY > bounds.y && userY < bounds.y + bounds.height));
+			if ((userX > bounds.x && userX < bounds.x + bounds.width) && (userY > bounds.y && userY < bounds.y + bounds.height))
 				fill(255,0,0);
 		}
 		else
+		{
 			//fill(200); // if not, fill gray
 			fill(0);
+			
+		}
 
 		rect(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
