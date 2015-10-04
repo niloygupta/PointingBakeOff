@@ -165,8 +165,7 @@ public class Main extends PApplet
 			userX = (15 % 4)* padding * 2 + margin+padding;
 		if(userY> (15 / 4)* padding * 2 + margin+padding)
 			userY = (15 / 4)* padding * 2 + margin+padding;
-		
-		
+			
 	}
 
 
