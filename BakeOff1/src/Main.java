@@ -12,8 +12,8 @@ public class Main extends PApplet
 	// you shouldn't need to edit any of these variables
 	int margin = 300; // margin from sides of window
 
-	//final int padding = 35; // padding between buttons and also their width/height
-	final int padding = 28;
+	final int padding = 35; // padding between buttons and also their width/height
+	//final int padding = 28;
 	ArrayList<Integer> trials = new ArrayList<Integer>(); //contains the order of buttons that activate in the test
 	int trialNum = 0; //the current trial number (indexes into trials array above)
 	int startTime = 0; // time starts when the first click is captured.
@@ -39,12 +39,12 @@ public class Main extends PApplet
 		//margin = width/3; //scale the padding with the size of the window
 		margin = width/8;
 		
-		/*if(first)
+		if(first)
 		{
 			userX = 275;
 			userY = 275;
 			first = false;
-		}*/
+		}
 		
 		
 		//background(0); //set background to black
@@ -89,7 +89,7 @@ public class Main extends PApplet
 		//fill(0,0);
 		
 		float startP = margin;
-		float endP = (3) * padding * 2 + margin +padding;
+		float endP = (float) ((3) * padding * 1.5 + margin +padding);
 		
 		line(startP, startP, endP,startP);
 		line(startP, startP, startP,endP);
@@ -151,8 +151,8 @@ public class Main extends PApplet
 	{
 		for (int i = 0; i < 16; i++)
 		{
-			double x = (i % 4) * padding * 2 + margin;
-			double y = (i / 4) * padding * 2 + margin;
+			double x = (i % 4) * padding * 1.5 + margin;
+			double y = (i / 4) * padding * 1.5 + margin;
 
 			if ((userX > x && userX < x +padding) 
 					&& (userY > y && userY < y + padding)) 
@@ -185,8 +185,8 @@ public class Main extends PApplet
 		if(userY<margin+10)
 			userY = margin+10;
 		
-		float endX = (15 % 4)* padding * 2 + margin+padding -10;
-		float endY = (15 / 4)* padding * 2 + margin+padding -10;
+		float endX = (float) ((15 % 4)* padding * 1.5 + margin+padding -10);
+		float endY = (float) ((15 / 4)* padding * 1.5 + margin+padding -10);
 		
 		if(userX>endX)
 			userX = (int)endX;
@@ -248,8 +248,8 @@ public class Main extends PApplet
 
 	public Rectangle getButtonLocation(int i)
 	{
-		double x = (i % 4) * padding * 2 + margin;
-		double y = (i / 4) * padding * 2 + margin;
+		double x = (i % 4) * padding * 1.5 + margin;
+		double y = (i / 4) * padding * 1.5 + margin;
 
 		return new Rectangle((int)x, (int)y, padding, padding);
 	}
