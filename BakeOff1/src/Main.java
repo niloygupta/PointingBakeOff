@@ -240,8 +240,8 @@ public class Main extends PApplet
 		double x = 250;
 		double y = 250;
 		robot.mouseMove((int)x,(int) y);
-		//userX = mouseX;
-		//userY = mouseY;
+		userX = mouseX;
+		userY = mouseY;
 	
 		
 	}
