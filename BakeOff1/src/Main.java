@@ -47,11 +47,13 @@ public class Main extends PApplet
 		}
 		
 		
-		background(0); //set background to black
+		//background(0); //set background to black
+		background(255);
 
 		if (trialNum >= trials.size()) //check to see if test is over
 		{
-			fill(255); //set fill color to white
+			//fill(255); //set fill color to white
+			fill(0);
 			//write to screen
 			text("Finished!", width / 2, height / 2); 
 			text("Hits: " + hits, width / 2, height / 2 + 20);
@@ -62,7 +64,8 @@ public class Main extends PApplet
 			return; //return, nothing else to do now test is over
 		}
 
-		fill(255); //set fill color to white
+		//fill(255); //set fill color to white
+		fill(0);
 		text((trialNum + 1) + " of " + trials.size(), 40, 20); //display what trial the user is on
 		//text("Prev Distance from target " + userX+" " +userY,100,40);
 
@@ -75,8 +78,27 @@ public class Main extends PApplet
 		 
 
 		//fill(255, 0, 0); // set fill color to red
-		fill(0, 0, 255);
-		ellipse(userX, userY, 20, 20); //draw user cursor as a circle with a diameter of 20
+		//fill(0, 0, 255);
+		//ellipse(userX, userY, 20, 20); //draw user cursor as a circle with a diameter of 20
+		
+		stroke(255, 0, 0);
+		strokeWeight(3);
+		line(userX - 10, userY, userX + 10, userY);
+		line(userX, userY - 10, userX, userY + 10);
+		
+		//fill(0,0);
+		
+		float startP = margin;
+		float endP = (3) * padding * 2 + margin +padding;
+		
+		line(startP, startP, endP,startP);
+		line(startP, startP, startP,endP);
+		line(startP,endP, endP,endP);
+		line(endP,startP, endP,endP);
+
+		//rect(padding  + margin, padding  + margin, x, y);
+		
+		stroke(0, 0, 0);
 		
 
 	}
@@ -121,8 +143,8 @@ public class Main extends PApplet
 
 		trialNum++; // Increment trial number
 		
-		userX = 275;
-		userY = 275;
+		//userX = 275;
+		//userY = 275;
 	}
 
 	boolean isWithinSquare(double userX, double userY)
@@ -150,9 +172,11 @@ public class Main extends PApplet
 		double newPosX = userX + easing*(mouseX - pmouseX);
 		double newPosY = userY + easing*(mouseY - pmouseY);
 		
+		 
+		
 		
 		if(isWithinSquare(newPosX,newPosY))
-			easing = 1.3;
+			easing = 1.5;
 			
 		userX += easing*(mouseX - pmouseX); //add to userX the difference between the current mouseX and the previous mouseX
 		userY += easing*(mouseY - pmouseY);
@@ -165,7 +189,8 @@ public class Main extends PApplet
 			userX = (15 % 4)* padding * 2 + margin+padding;
 		if(userY> (15 / 4)* padding * 2 + margin+padding)
 			userY = (15 / 4)* padding * 2 + margin+padding;
-			
+		
+		
 	}
 
 
@@ -212,8 +237,8 @@ public class Main extends PApplet
 		double x = 250;
 		double y = 250;
 		robot.mouseMove((int)x,(int) y);
-		userX = mouseX;
-		userY = mouseY;
+		//userX = mouseX;
+		//userY = mouseY;
 	
 		
 	}
@@ -229,13 +254,17 @@ public class Main extends PApplet
 	public void drawButton(int i)
 	{
 		Rectangle bounds = getButtonLocation(i);
-
+		fill(0);
 		if (trials.get(trialNum) == i) // see if current button is the target
+		{
 			//fill(0, 255, 255); // if so, fill cyan
 			fill(0, 255, 0);
+			if ((userX > bounds.x && userX < bounds.x + bounds.width) && (userY > bounds.y && userY < bounds.y + bounds.height));
+				fill(255,0,0);
+		}
 		else
 			//fill(200); // if not, fill gray
-			fill(255);
+			fill(0);
 
 		rect(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
