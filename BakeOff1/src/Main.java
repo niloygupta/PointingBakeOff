@@ -180,15 +180,18 @@ public class Main extends PApplet
 			
 		userX += easing*(mouseX - pmouseX); //add to userX the difference between the current mouseX and the previous mouseX
 		userY += easing*(mouseY - pmouseY);
-		if(userX<margin)
-			userX = margin;
-		if(userY<margin)
-			userY = margin;
+		if(userX<margin+10)
+			userX = margin+10;
+		if(userY<margin+10)
+			userY = margin+10;
 		
-		if(userX>(15 % 4)* padding * 2 + margin+padding)
-			userX = (15 % 4)* padding * 2 + margin+padding;
-		if(userY> (15 / 4)* padding * 2 + margin+padding)
-			userY = (15 / 4)* padding * 2 + margin+padding;
+		float endX = (15 % 4)* padding * 2 + margin+padding -10;
+		float endY = (15 / 4)* padding * 2 + margin+padding -10;
+		
+		if(userX>endX)
+			userX = (int)endX;
+		if(userY> endY)
+			userY = (int)endY;
 		
 		
 	}
