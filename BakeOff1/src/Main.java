@@ -11,8 +11,10 @@ public class Main extends PApplet
 {
 	// you shouldn't need to edit any of these variables
 	int margin = 300; // margin from sides of window
+	int marginX = 500;
+	int marginY = 200;
 
-	final int dimen = 55; // padding between buttons and also their width/height
+	final int dimen = 60; // padding between buttons and also their width/height
 	final int padding = 10;
 	//final int padding = 28;
 	ArrayList<Integer> trials = new ArrayList<Integer>(); //contains the order of buttons that activate in the test
@@ -38,7 +40,8 @@ public class Main extends PApplet
 	{
 		
 		//margin = width/3; //scale the padding with the size of the window
-		margin = width/7;
+		//margin = width/6;
+		margin = 300;
 		
 		if(first)
 		{
@@ -89,13 +92,14 @@ public class Main extends PApplet
 		
 		//fill(0,0);
 		
-		float startP = margin;
-		float endP = (float) ((3) * dimen + (3) *padding + margin +dimen);
 		
-		line(startP, startP, endP,startP);
-		line(startP, startP, startP,endP);
-		line(startP,endP, endP,endP);
-		line(endP,startP, endP,endP);
+		float endPX = (float) ((3) * dimen + (3) *padding + marginX +dimen);
+		float endPY = (float) ((3) * dimen + (3) *padding + marginY +dimen);
+		
+		line(marginX, marginY, endPX,marginY);
+		line(marginX, marginY, marginX,endPY);
+		line(marginX,endPY, endPX,endPY);
+		line(endPX,marginY, endPX,endPY);
 
 		//rect(padding  + margin, padding  + margin, x, y);
 		
@@ -152,8 +156,8 @@ public class Main extends PApplet
 	{
 		for (int i = 0; i < 16; i++)
 		{
-			double x = (i % 4) * dimen + (i % 4)*padding + margin;
-			double y = (i / 4) * dimen + (i / 4)*padding+ 1.5 + margin;
+			double x = (i % 4) * dimen + (i % 4)*padding + marginX;
+			double y = (i / 4) * dimen + (i / 4)*padding+ 1.5 + marginY;
 
 			if ((userX > x && userX < x +dimen) 
 					&& (userY > y && userY < y + dimen)) 
@@ -181,13 +185,13 @@ public class Main extends PApplet
 			
 		userX += easing*(mouseX - pmouseX); //add to userX the difference between the current mouseX and the previous mouseX
 		userY += easing*(mouseY - pmouseY);
-		if(userX<margin+10)
-			userX = margin+10;
-		if(userY<margin+10)
-			userY = margin+10;
+		if(userX<marginX+10)
+			userX = marginX+10;
+		if(userY<marginY+10)
+			userY = marginY+10;
 		
-		float endX = (float) ((15 % 4)* dimen + (15 % 4)*padding + margin+dimen -10);
-		float endY = (float) ((15 / 4)* dimen + (15 / 4)*padding + margin+dimen -10);
+		float endX = (float) ((15 % 4)* dimen + (15 % 4)*padding + marginX+dimen -10);
+		float endY = (float) ((15 / 4)* dimen + (15 / 4)*padding + marginY+dimen -10);
 		
 		if(userX>endX)
 			userX = (int)endX;
@@ -249,8 +253,8 @@ public class Main extends PApplet
 
 	public Rectangle getButtonLocation(int i)
 	{
-		double x = (i % 4) * dimen + (i % 4) *padding + margin;
-		double y = (i / 4) * dimen + (i / 4) *padding + margin;
+		double x = (i % 4) * dimen + (i % 4) *padding + marginX;
+		double y = (i / 4) * dimen + (i / 4) *padding + marginY;
 
 		return new Rectangle((int)x, (int)y, dimen, dimen);
 	}
