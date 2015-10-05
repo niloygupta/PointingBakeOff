@@ -12,7 +12,7 @@ public class Main extends PApplet
 	// you shouldn't need to edit any of these variables
 	int margin = 300; // margin from sides of window
 	int marginX = 500;
-	int marginY = 200;
+	int marginY = 250;
 
 	final int dimen = 60; // padding between buttons and also their width/height
 	final int padding = 10;
@@ -172,7 +172,7 @@ public class Main extends PApplet
 	
 
 		
-		double easing = 2;
+		double easing = 1.9;
 
 		double newPosX = userX + easing*(mouseX - pmouseX);
 		double newPosY = userY + easing*(mouseY - pmouseY);
@@ -242,8 +242,8 @@ public class Main extends PApplet
 
 		//double x = (5 % 4) * padding * 2 + width/8;
 		//double y = (5 / 4) * padding * 2 + width/8;
-		double x = 250;
-		double y = 250;
+		double x = 600;
+		double y = 300;
 		robot.mouseMove((int)x,(int) y);
 		userX = mouseX;
 		userY = mouseY;
@@ -272,8 +272,8 @@ public class Main extends PApplet
 		}
 		else
 		{
-			//fill(200); // if not, fill gray
-			fill(0);
+			fill(211); // if not, fill gray
+			//fill(0);
 			
 		}
 
