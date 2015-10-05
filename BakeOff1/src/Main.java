@@ -12,7 +12,7 @@ public class Main extends PApplet
 	// you shouldn't need to edit any of these variables
 	int margin = 300; // margin from sides of window
 
-	final int dimen = 50; // padding between buttons and also their width/height
+	final int dimen = 55; // padding between buttons and also their width/height
 	final int padding = 10;
 	//final int padding = 28;
 	ArrayList<Integer> trials = new ArrayList<Integer>(); //contains the order of buttons that activate in the test
@@ -38,7 +38,7 @@ public class Main extends PApplet
 	{
 		
 		//margin = width/3; //scale the padding with the size of the window
-		margin = width/5;
+		margin = width/7;
 		
 		if(first)
 		{
@@ -168,7 +168,7 @@ public class Main extends PApplet
 	
 
 		
-		double easing = 3;
+		double easing = 2.2;
 
 		double newPosX = userX + easing*(mouseX - pmouseX);
 		double newPosY = userY + easing*(mouseY - pmouseY);
@@ -177,7 +177,7 @@ public class Main extends PApplet
 		
 		
 		if(isWithinSquare(newPosX,newPosY))
-			easing = 1.3;
+			easing = 1.1;
 			
 		userX += easing*(mouseX - pmouseX); //add to userX the difference between the current mouseX and the previous mouseX
 		userY += easing*(mouseY - pmouseY);
