@@ -168,7 +168,7 @@ public class Main extends PApplet
 	
 
 		
-		double easing = 2.2;
+		double easing = 2;
 
 		double newPosX = userX + easing*(mouseX - pmouseX);
 		double newPosY = userY + easing*(mouseY - pmouseY);
@@ -177,7 +177,7 @@ public class Main extends PApplet
 		
 		
 		if(isWithinSquare(newPosX,newPosY))
-			easing = 1.1;
+			easing = 1;
 			
 		userX += easing*(mouseX - pmouseX); //add to userX the difference between the current mouseX and the previous mouseX
 		userY += easing*(mouseY - pmouseY);
