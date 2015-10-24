@@ -6,498 +6,618 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import processing.core.*;
 
 
-//public class MainActivity extends processing.core.PApplet { //PApplet in fact extends android.app.Activity
-  String[] phrases; //contains all of the phrases
-  int totalTrialNum = 4; //the total number of phrases to be tested - set this low for testing. Might be ~10 for the real bakeoff!
-  int currTrialNum = 0; // the current trial number (indexes into trials array above)
-  float startTime = 0; // time starts when the first letter is entered
-  float finishTime = 0; // records the time of when the final trial ends
-  float lastTime = 0; //the timestamp of when the last trial was completed
-  float lettersEnteredTotal = 0; //a running total of the number of letters the user has entered (need this for final WPM computation)
-  float lettersExpectedTotal = 0; //a running total of the number of letters expected (correct phrases)
-  float errorsTotal = 0; //a running total of the number of errors (when hitting next)
-  String currentPhrase = ""; //the current target phrase
-  String currentTyped = ""; //what the user has typed so far
-  //final int DPIofYourDeviceScreen = 441; //you will need to look up the DPI or PPI of your device to make sure you get the right scale!!
-
-  final int DPIofYourDeviceScreen = 294; //Moto G
-  //http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
-  final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
-  KeyPad keyPad;
-  int displayType = -1;
-  //Variables for my silly implementation. You can delete this:
-  ArrayList<String> inputBtns;
-  ArrayList<String> suggestedWords = new ArrayList<String>();
-  
-  
-  int XStart = 100;
-  int YStart = 200;
-  int keyPadMargin = 40;
-
-  int touchX = 0;
-  int touchY = 0;
-
-
-  //You can modify anything in here. This is just a basic implementation.
-  public void setup()
-  {
-    phrases = loadStrings("phrases2.txt"); //load the phrase set into memory
-    Collections.shuffle(Arrays.asList(phrases)); //randomize the order of the phrases
-
-    initKeyBoard();
-
-    // orientation(PORTRAIT); //can also be LANDSCAPE -- sets orientation on android device
-    size(1000, 1000); //Sets the size of the app. You may want to modify this to your device. Many phones today are 1080 wide by 1920 tall.
-    textFont(createFont("Arial", 24)); //set the font to arial 24
-    //noStroke(); //my code doesn't use any strokes.
-  }
-
-
-  private void initKeyBoard() {
-
-    keyPad = new KeyPad();
-    KeyGroup keyGroup = new KeyGroup(165,230,50,50);
-    keyGroup.keys.add(new Key("a"));
-    keyGroup.keys.add(new Key("b"));
-    keyGroup.keys.add(new Key("c"));
-    keyGroup.keys.add(new Key("d"));
-    keyGroup.keys.add(new Key("e"));
-    keyGroup.keys.add(new Key("f"));
-    keyGroup.keys.add(new Key("g"));
-    keyPad.keyGroups.add(keyGroup);
-    keyGroup = new KeyGroup((int)sizeOfInputArea+77,270,50,50);
-    keyGroup.keys.add(new Key("h"));
-    keyGroup.keys.add(new Key("i"));
-    keyGroup.keys.add(new Key("j"));
-    keyGroup.keys.add(new Key("k"));
-    keyGroup.keys.add(new Key("l"));
-    keyGroup.keys.add(new Key("m"));
-    keyPad.keyGroups.add(keyGroup);
-    keyGroup = new KeyGroup(165,(int)sizeOfInputArea+190,50,50);
-    keyGroup.keys.add(new Key("n"));
-    keyGroup.keys.add(new Key("o"));
-    keyGroup.keys.add(new Key("p"));
-    keyGroup.keys.add(new Key("q"));
-    keyGroup.keys.add(new Key("r"));
-    keyGroup.keys.add(new Key("s"));
-    keyGroup.keys.add(new Key("t"));
-    Collections.reverse(keyGroup.keys);
-    keyPad.keyGroups.add(keyGroup);
-    keyGroup = new KeyGroup(117,270,50,50);
-    keyGroup.keys.add(new Key("u"));
-    keyGroup.keys.add(new Key("v"));
-    keyGroup.keys.add(new Key("w"));
-    keyGroup.keys.add(new Key("x"));
-    keyGroup.keys.add(new Key("y"));
-    keyGroup.keys.add(new Key("z"));
-    keyPad.keyGroups.add(keyGroup);
-
-  }
-
-  //You can modify anything in here. This is just a basic implementation.
-  public void draw()
-  {
-
-    recommendWords();
-    
-    background(0); //clear background
-
-    // image(watch,-200,200);
-    fill(0,0,255);
-    rect(XStart, YStart, sizeOfInputArea, sizeOfInputArea); //input area should be 2" by 2"
-  
-    fill(100);
-    
-
-
-    if(displayType==-1)
-    {
-      fill(0);
-      rect(XStart + 40, YStart + 40, sizeOfInputArea-80, sizeOfInputArea-80);
-      if (startTime!=0)
-        drawKeyBoard();
-    }
-    else
-    {
-      drawKeyPad(displayType);
-    }
-    textFont(createFont("Arial", 24));
-    if (finishTime!=0)
-    {
-      fill(255);
-      textAlign(CENTER);
-      text("Finished", 280, 150);
-      return;
-    }
-
-    if (startTime==0 & !mousePressed)
-    {
-      fill(255);
-      textAlign(CENTER);
-      text("Click to start time!", 280, 150); //display this messsage until the user clicks!
-    }
-
-    if (startTime==0 & mousePressed)
-    {
-      nextTrial(); //start the trials!
-    }
-
-
-    if (startTime!=0)
-    {
-      //you will need something like the next 10 lines in your code. Output does not have to be within the 2 inch area!
-      textAlign(LEFT); //align the text left
-      fill(128);
-      text("Phrase " + (currTrialNum+1) + " of " + totalTrialNum, 70, 50); //draw the trial count
-      fill(255);
-      text("Target:   " + currentPhrase, 70, 100); //draw the target string
-      text("Entered: " + currentTyped, 70, 140); //draw what the user has entered thus far 
-      fill(255, 0, 0);
-      rect(600, 00, 150, 150); //drag next button
-      fill(255);
-      text("NEXT > ", 610, 75); //draw next label
-
-    }
-  }
-
-
-
-
-  private void recommendWords() {
-    suggestedWords.clear();
-    suggestedWords.add("Word1");
-    suggestedWords.add("Word2");
-    suggestedWords.add("Word3");
-    
-  }
-
-
-  private void drawKeyBoard() {
-
-    fill(255);
-    strokeWeight(4);
-    line(XStart +sizeOfInputArea/2-5,YStart,XStart+sizeOfInputArea/2-5,YStart+sizeOfInputArea);
-    line(XStart,YStart+sizeOfInputArea/2+5,XStart+sizeOfInputArea,YStart+sizeOfInputArea/2+5);
-    
-    line(XStart,YStart,XStart+sizeOfInputArea,YStart+sizeOfInputArea);
-    line(XStart,YStart+sizeOfInputArea,XStart+sizeOfInputArea,YStart);
-    
-    strokeWeight(1);
-    
-    
-    textFont(createFont("Arial", 30));
-    textAlign(CENTER);
-    int count = 0;
-    for(KeyGroup keyGroup:keyPad.keyGroups)
-    {
-      int i=0;
-      for(Key key:keyGroup.keys)
-      {
-        if(count%2==0)
-          text(key.c, keyGroup.x + i*30, keyGroup.y);
-        else
-          text(key.c, keyGroup.x, keyGroup.y + i*35);
-        i++;
-      }
-      count++;
-
-    }
-    
-    fill(255,255,255);
-    
-    rect(XStart + 40 , YStart + 40, sizeOfInputArea - 80, 40);
-    rect(XStart + 40 , YStart + 80, sizeOfInputArea - 80, 40);
-    rect(XStart + 40 , YStart + 120, sizeOfInputArea - 80, 40);
-    
-    textAlign(CENTER);
-    fill(0);
-    text(suggestedWords.get(0),XStart + 150,YStart + 75);
-    text(suggestedWords.get(1),XStart + 150,YStart + 115);
-    text(suggestedWords.get(2),XStart + 150,YStart + 155);
-    
-    
-  }
-
-  boolean didMouseClick(float x, float y, float w, float h) //simple function to do hit testing
-  {
-    return (mouseX >= x && mouseX<=x+w && mouseY>=y && mouseY<=y+h); //check to see if it is in button bounds
-  }
-
-  @Override
-  public void mouseReleased()
-  {
-    if(displayType!=-1)
-      return;
-    if(Math.abs(mouseX-touchX)>10)
-    {
-      if(mouseX<touchX)
-      {
-        if(currentTyped.length()>0)
-          currentTyped = currentTyped.substring(0, currentTyped.length()-1);
-      }
-      if(mouseX>touchX)
-        currentTyped+=" ";
-    }
-
-  }
-  public void mousePressed()
-  {
-    
-    touchX = mouseX;
-    touchY = mouseY;
-
-    if(displayType!=-1)
-    {
-      if (didMouseClick(XStart, YStart, sizeOfInputArea/2, sizeOfInputArea/2))
-        currentTyped+= inputBtns.get(0);
-      if (didMouseClick(XStart+sizeOfInputArea/2, YStart, sizeOfInputArea/2, sizeOfInputArea/2))
-        currentTyped+= inputBtns.get(1);
-      if (didMouseClick(XStart+sizeOfInputArea/2, YStart+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2))
-        currentTyped+= inputBtns.get(2);
-      if (didMouseClick(XStart, YStart+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2))
-        currentTyped+= inputBtns.get(3);
-      displayType = -1;
-      return;
-    }
-
-    if (didMouseClick(XStart, YStart, sizeOfInputArea/2, 40))
-    {
-      displayType = 0;
-    }
-
-    else if (didMouseClick(XStart + sizeOfInputArea/2 , YStart, sizeOfInputArea/2, 40))
-    {
-      displayType = 1;
-    }
-
-    else if (didMouseClick(XStart +sizeOfInputArea -40 , 240, 40, (sizeOfInputArea -80)/2))
-    {
-      displayType = 2;
-    }
-
-    else if (didMouseClick(XStart +sizeOfInputArea -40 , 240 + (sizeOfInputArea -80)/2 , 40, (sizeOfInputArea -80)/2))
-    {
-      displayType = 3;
-    }
-
-    else if (didMouseClick(XStart, YStart + sizeOfInputArea - 40, sizeOfInputArea/2, 40))
-    {
-      displayType = 4;
-    }
-
-    else if (didMouseClick(XStart+sizeOfInputArea/2, YStart + sizeOfInputArea - 40, sizeOfInputArea/2, 40))
-    {
-      displayType = 5;
-    }
-
-    else if (didMouseClick(XStart ,240, 40, (sizeOfInputArea -80)/2))
-    {
-      displayType = 6;
-    }
-
-    else if (didMouseClick(XStart ,240+ (sizeOfInputArea -80)/2, 40,  (sizeOfInputArea -80)/2))
-    {
-      displayType = 7;
-    }
-    
-    else if(didMouseClick(XStart + 40 ,YStart + 40, sizeOfInputArea - 80, 40))
-    {
-      replaceWord(suggestedWords.get(0));
-    }
-    else if(didMouseClick(XStart + 40 ,YStart + 80, sizeOfInputArea - 80, 40))
-    {
-      replaceWord(suggestedWords.get(1));
-    }
-    else if(didMouseClick(XStart + 40 ,YStart + 120, sizeOfInputArea - 80, 40))
-    {
-      replaceWord(suggestedWords.get(2));
-    }
-
-    if (didMouseClick(600, 00, 150, 150)) //check if click is in next button
-    {
-      nextTrial(); //if so, advance to next trial
-    }
-  }
-
-
-  private void replaceWord(String suggestedWord) {
-    
-    int index = currentTyped.lastIndexOf(" ");
-    if(index==-1)
-      currentTyped = suggestedWord+ " ";
-    else
-      currentTyped = currentTyped.substring(0, index) + " " + suggestedWord + " ";
-  }
-
-
-  private void drawKeyPad(int index) {
-
-    int keyGroupIndex = index/2;
-
-    fill(255);
-    textFont(createFont("Arial", 36));
-    textAlign(CENTER);
-
-    KeyGroup keyGroup = keyPad.keyGroups.get(keyGroupIndex);
-
-    inputBtns = new ArrayList<String>(); 
-
-    if(index%2==0)
-    {
-      inputBtns.add(keyGroup.keys.get(0).c);
-      inputBtns.add(keyGroup.keys.get(1).c);
-      inputBtns.add(keyGroup.keys.get(2).c);
-      inputBtns.add(keyGroup.keys.get(3).c);
-    }
-    else
-    {
-      int lastIndex = keyGroup.keys.size() -1 ;
-      inputBtns.add(keyGroup.keys.get(lastIndex-3).c);
-      inputBtns.add(keyGroup.keys.get(lastIndex-2).c);
-      inputBtns.add(keyGroup.keys.get(lastIndex-1).c);
-      inputBtns.add(keyGroup.keys.get(lastIndex).c);
-    }
-
-    drawCell(inputBtns);
-
-  }
-
-  private void drawCell(ArrayList<String> inputBtns)
-  {
-    textFont(createFont("Arial", 40));
-
-    strokeWeight(4);
-    line(XStart +sizeOfInputArea/2,YStart,XStart+sizeOfInputArea/2,YStart+sizeOfInputArea);
-    line(XStart,YStart+sizeOfInputArea/2,XStart+sizeOfInputArea,YStart+sizeOfInputArea/2);
-    strokeWeight(1);
-    
-    
-    text(inputBtns.get(0), 175, 275);
-    text(inputBtns.get(1), 175 + sizeOfInputArea/2, 275);
-    text(inputBtns.get(2), 175+ sizeOfInputArea/2, 275+ sizeOfInputArea/2);
-    text(inputBtns.get(3), 175, 275+ sizeOfInputArea/2);
-
-
-  }
-
-
-
-  void nextTrial()
-  {
-    if (currTrialNum >= totalTrialNum) //check to see if experiment is done
-      return; //if so, just return
-
-    if (startTime!=0 && finishTime==0) //in the middle of trials
-    {
-      System.out.println("==================");
-      System.out.println("Phrase " + (currTrialNum+1) + " of " + totalTrialNum); //output
-      System.out.println("Target phrase: " + currentPhrase); //output
-      System.out.println("Phrase length: " + currentPhrase.length()); //output
-      System.out.println("User typed: " + currentTyped); //output
-      System.out.println("User typed length: " + currentTyped.length()); //output
-      System.out.println("Number of errors: " + computeLevenshteinDistance(currentTyped.trim(), currentPhrase.trim())); //trim whitespace and compute errors
-      System.out.println("Time taken on this trial: " + (millis()-lastTime)); //output
-      System.out.println("Time taken since beginning: " + (millis()-startTime)); //output
-      System.out.println("==================");
-      lettersExpectedTotal+=currentPhrase.length();
-      lettersEnteredTotal+=currentTyped.length();
-      errorsTotal+=computeLevenshteinDistance(currentTyped.trim(), currentPhrase.trim());
-    }
-
-    if (currTrialNum == totalTrialNum-1) //check to see if experiment just finished
-    {
-      finishTime = millis();
-      System.out.println("==================");
-      System.out.println("Trials complete!"); //output
-      System.out.println("Total time taken: " + (finishTime - startTime)); //output
-      System.out.println("Total letters entered: " + lettersEnteredTotal); //output
-      System.out.println("Total letters expected: " + lettersExpectedTotal); //output
-      System.out.println("Total errors entered: " + errorsTotal); //output
-      System.out.println("WPM: " + (lettersEnteredTotal/5.0f)/((finishTime - startTime)/60000f)); //output
-      System.out.println("==================");
-      currTrialNum++; //increment by one so this mesage only appears once when all trials are done
-      return;
-    }
-
-    if (startTime==0) //first trial starting now
-    {
-      System.out.println("Trials beginning! Starting timer..."); //output we're done
-      startTime = millis(); //start the timer!
-    }
-    else
-    {
-      currTrialNum++; //increment trial number
-    }
-
-    lastTime = millis(); //record the time of when this trial ended
-    currentTyped = ""; //clear what is currently typed preparing for next trial
-    currentPhrase = phrases[currTrialNum]; // load the next phrase!
-    //currentPhrase = "abc"; // uncomment this to override the test phrase (useful for debugging)
-  }
-
-
-
-
-  //=========SHOULD NOT NEED TO TOUCH THIS METHOD AT ALL!==============
-  int computeLevenshteinDistance(String phrase1, String phrase2) //this computers error between two strings
-  {
-    int[][] distance = new int[phrase1.length() + 1][phrase2.length() + 1];
-
-    for (int i = 0; i <= phrase1.length(); i++)
-      distance[i][0] = i;
-    for (int j = 1; j <= phrase2.length(); j++)
-      distance[0][j] = j;
-
-    for (int i = 1; i <= phrase1.length(); i++)
-      for (int j = 1; j <= phrase2.length(); j++)
-        distance[i][j] = min(min(distance[i - 1][j] + 1, distance[i][j - 1] + 1), distance[i - 1][j - 1] + ((phrase1.charAt(i - 1) == phrase2.charAt(j - 1)) ? 0 : 1));
-
-    return distance[phrase1.length()][phrase2.length()];
-  }
 
+
+
+
+public class MainActivity extends processing.core.PApplet { //PApplet in fact extends android.app.Activity
+	String[] phrases; //contains all of the phrases
+	int totalTrialNum = 4; //the total number of phrases to be tested - set this low for testing. Might be ~10 for the real bakeoff!
+	int currTrialNum = 0; // the current trial number (indexes into trials array above)
+	float startTime = 0; // time starts when the first letter is entered
+	float finishTime = 0; // records the time of when the final trial ends
+	float lastTime = 0; //the timestamp of when the last trial was completed
+	float lettersEnteredTotal = 0; //a running total of the number of letters the user has entered (need this for final WPM computation)
+	float lettersExpectedTotal = 0; //a running total of the number of letters expected (correct phrases)
+	float errorsTotal = 0; //a running total of the number of errors (when hitting next)
+	String currentPhrase = ""; //the current target phrase
+	String currentTyped = ""; //what the user has typed so far
+	//final int DPIofYourDeviceScreen = 441; //you will need to look up the DPI or PPI of your device to make sure you get the right scale!!
+
+	final int DPIofYourDeviceScreen = 294; //Moto G
+	//http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
+	final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
+	KeyPad keyPad;
+	int displayType = -1;
+	//Variables for my silly implementation. You can delete this:
+	ArrayList<String> inputBtns;
+	ArrayList<String> suggestedWords = new ArrayList<String>();
+
+
+	int XStart = 100;
+	int YStart = 200;
+	int keyPadMargin = 40;
+
+	int touchX = 0;
+	int touchY = 0;
+
+	TreeMap<String,Long> unigramMap = new TreeMap<String,Long>();
+	TreeMap<String,Long> bigramMap = new TreeMap<String,Long>();
+
+
+	//You can modify anything in here. This is just a basic implementation.
+	public void setup()
+	{
+		phrases = loadStrings("phrases2.txt"); //load the phrase set into memory
+		Collections.shuffle(Arrays.asList(phrases)); //randomize the order of the phrases
+
+		loadUnigramFreq();
+		loadBigramFreq();
+
+		initKeyBoard();
+
+
+		// orientation(PORTRAIT); //can also be LANDSCAPE -- sets orientation on android device
+		size(1000, 1000); //Sets the size of the app. You may want to modify this to your device. Many phones today are 1080 wide by 1920 tall.
+		textFont(createFont("Arial", 24)); //set the font to arial 24
+		//noStroke(); //my code doesn't use any strokes.
+	}
+
+
+	private void loadUnigramFreq() {
+
+		String[] unigrams = loadStrings("count_1w.txt");
+
+		for(String unigram:unigrams)
+		{
+			String [] tokens = unigram.split("\t");
+			unigramMap.put(tokens[0], Long.parseLong(tokens[1]));
+		}
+	}
+
+
+	private void loadBigramFreq() {
+
+		String[] bigrams = loadStrings("count_2w.txt");
+
+		for(String bigram:bigrams)
+		{
+			String [] tokens = bigram.split("\t");
+			bigramMap.put(tokens[0], Long.parseLong(tokens[1]));
+		}
+	}
+
+
+	private void initKeyBoard() {
+
+		keyPad = new KeyPad();
+		KeyGroup keyGroup = new KeyGroup(165,230,50,50);
+		keyGroup.keys.add(new Key("a"));
+		keyGroup.keys.add(new Key("b"));
+		keyGroup.keys.add(new Key("c"));
+		keyGroup.keys.add(new Key("d"));
+		keyGroup.keys.add(new Key("e"));
+		keyGroup.keys.add(new Key("f"));
+		keyGroup.keys.add(new Key("g"));
+		keyPad.keyGroups.add(keyGroup);
+		keyGroup = new KeyGroup((int)sizeOfInputArea+77,270,50,50);
+		keyGroup.keys.add(new Key("h"));
+		keyGroup.keys.add(new Key("i"));
+		keyGroup.keys.add(new Key("j"));
+		keyGroup.keys.add(new Key("k"));
+		keyGroup.keys.add(new Key("l"));
+		keyGroup.keys.add(new Key("m"));
+		keyPad.keyGroups.add(keyGroup);
+		keyGroup = new KeyGroup(165,(int)sizeOfInputArea+190,50,50);
+		keyGroup.keys.add(new Key("n"));
+		keyGroup.keys.add(new Key("o"));
+		keyGroup.keys.add(new Key("p"));
+		keyGroup.keys.add(new Key("q"));
+		keyGroup.keys.add(new Key("r"));
+		keyGroup.keys.add(new Key("s"));
+		keyGroup.keys.add(new Key("t"));
+		Collections.reverse(keyGroup.keys);
+		keyPad.keyGroups.add(keyGroup);
+		keyGroup = new KeyGroup(117,270,50,50);
+		keyGroup.keys.add(new Key("u"));
+		keyGroup.keys.add(new Key("v"));
+		keyGroup.keys.add(new Key("w"));
+		keyGroup.keys.add(new Key("x"));
+		keyGroup.keys.add(new Key("y"));
+		keyGroup.keys.add(new Key("z"));
+		keyPad.keyGroups.add(keyGroup);
+
+	}
+
+	//You can modify anything in here. This is just a basic implementation.
+	public void draw()
+	{
+
+
+
+		background(0); //clear background
+
+		// image(watch,-200,200);
+		fill(0,0,255);
+		rect(XStart, YStart, sizeOfInputArea, sizeOfInputArea); //input area should be 2" by 2"
+
+		fill(100);
+
+
+
+		if(displayType==-1)
+		{
+			fill(0);
+			rect(XStart + keyPadMargin, YStart + keyPadMargin, sizeOfInputArea-2*keyPadMargin, sizeOfInputArea-2*keyPadMargin);
+			recommendWords();
+			if (startTime!=0)
+				drawKeyBoard();
+		}
+		else
+		{
+			drawKeyPad(displayType);
+		}
+		textFont(createFont("Arial", 24));
+		if (finishTime!=0)
+		{
+			fill(255);
+			textAlign(CENTER);
+			text("Finished", 280, 150);
+			return;
+		}
+
+		if (startTime==0 & !mousePressed)
+		{
+			fill(255);
+			textAlign(CENTER);
+			text("Click to start time!", 280, 150); //display this messsage until the user clicks!
+		}
+
+		if (startTime==0 & mousePressed)
+		{
+			nextTrial(); //start the trials!
+		}
+
+
+		if (startTime!=0)
+		{
+			//you will need something like the next 10 lines in your code. Output does not have to be within the 2 inch area!
+			textAlign(LEFT); //align the text left
+			fill(128);
+			text("Phrase " + (currTrialNum+1) + " of " + totalTrialNum, 70, 50); //draw the trial count
+			fill(255);
+			text("Target:   " + currentPhrase, 70, 100); //draw the target string
+			text("Entered: " + currentTyped, 70, 140); //draw what the user has entered thus far 
+			fill(255, 0, 0);
+			rect(600, 00, 150, 150); //drag next button
+			fill(255);
+			text("NEXT > ", 610, 75); //draw next label
+
+		}
+	}
+
+
+	private ArrayList<WordFreq> getSuggestions(String prefix, TreeMap<String,Long> ngramMap,boolean isBigram)
+	{
+		ArrayList<WordFreq> suggestions = new ArrayList<WordFreq>();
+		SortedMap<String, Long> tailMap = ngramMap.tailMap(prefix);
+
+		for(String tailKey:tailMap.keySet())
+		{
+			if (tailKey.startsWith(prefix)) 
+			{
+				if(!isBigram)
+					suggestions.add(new WordFreq(tailKey,tailMap.get(tailKey)));
+				else
+				{
+					String nextWord = tailKey.substring(tailKey.indexOf(" ")+1);
+					suggestions.add(new WordFreq(nextWord,tailMap.get(tailKey)));
+				}
+			}
+			else 
+				break;
+		}
+
+		return suggestions;
+	}
+
+
+	private void recommendWords() {
+		suggestedWords.clear();
+		ArrayList<WordFreq> suggestions = new ArrayList<WordFreq>();
+		if(currentTyped==null || "".equals(currentTyped))
+		{
+			suggestions = getSuggestions("",unigramMap,false);
+			addTopSuggestions(suggestions);
+			return;
+		}
+
+		String[] tokens = currentTyped.split(" ");
+
+		if(tokens.length==1)
+			suggestions = getSuggestions(tokens[tokens.length-1],unigramMap,false);
+		else
+		{
+			suggestions = getSuggestions(tokens[tokens.length-2] +" "+ tokens[tokens.length-1],bigramMap,true);
+
+			if(suggestions.size()<3)
+				suggestions.addAll(getSuggestions(tokens[tokens.length-1],unigramMap,false));
+		}
+		addTopSuggestions(suggestions);
+
+
+	}
+
+
+	private void addTopSuggestions(ArrayList<WordFreq> suggestions) {
+		Collections.sort(suggestions, new WordFreqComparator());
+
+		suggestedWords.add("the");
+		suggestedWords.add("of");
+		suggestedWords.add("and");
+		if(suggestions.size()>0)
+			suggestedWords.set(0,suggestions.get(0).word);
+		if(suggestions.size()>1)
+			suggestedWords.set(1,suggestions.get(1).word);
+		if(suggestions.size()>2)
+			suggestedWords.set(2,suggestions.get(2).word);
+
+	}
+
+
+	private void drawKeyBoard() {
+
+		fill(255);
+		strokeWeight(4);
+		line(XStart +sizeOfInputArea/2-5,YStart,XStart+sizeOfInputArea/2-5,YStart+sizeOfInputArea);
+		line(XStart,YStart+sizeOfInputArea/2+5,XStart+sizeOfInputArea,YStart+sizeOfInputArea/2+5);
+
+		line(XStart,YStart,XStart+sizeOfInputArea,YStart+sizeOfInputArea);
+		line(XStart,YStart+sizeOfInputArea,XStart+sizeOfInputArea,YStart);
+
+		strokeWeight(1);
+
+
+		textFont(createFont("Arial", 30));
+		textAlign(CENTER);
+		int count = 0;
+		for(KeyGroup keyGroup:keyPad.keyGroups)
+		{
+			int i=0;
+			for(Key key:keyGroup.keys)
+			{
+				if(count%2==0)
+					text(key.c, keyGroup.x + i*30, keyGroup.y);
+				else
+					text(key.c, keyGroup.x, keyGroup.y + i*35);
+				i++;
+			}
+			count++;
+
+		}
+
+		fill(255,255,255);
+
+		rect(XStart + keyPadMargin , YStart + keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin);
+		rect(XStart + keyPadMargin , YStart + 2*keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin);
+		rect(XStart + keyPadMargin , YStart + 120, sizeOfInputArea - 2*keyPadMargin, keyPadMargin);
+
+		textAlign(CENTER);
+		fill(0);
+		text(suggestedWords.get(0),XStart + 150,YStart + 75);
+		text(suggestedWords.get(1),XStart + 150,YStart + 115);
+		text(suggestedWords.get(2),XStart + 150,YStart + 155);
+
+
+	}
+
+	boolean didMouseClick(float x, float y, float w, float h) //simple function to do hit testing
+	{
+		return (mouseX >= x && mouseX<=x+w && mouseY>=y && mouseY<=y+h); //check to see if it is in button bounds
+	}
+
+	@Override
+	public void mouseReleased()
+	{
+		if(displayType!=-1)
+			return;
+		if(Math.abs(mouseX-touchX)>10)
+		{
+			if(mouseX<touchX)
+			{
+				if(currentTyped.length()>0)
+					currentTyped = currentTyped.substring(0, currentTyped.length()-1);
+			}
+			if(mouseX>touchX)
+				currentTyped+=" ";
+		}
+
+	}
+	public void mousePressed()
+	{
+
+		touchX = mouseX;
+		touchY = mouseY;
+
+		if(displayType!=-1)
+		{
+			if (didMouseClick(XStart, YStart, sizeOfInputArea/2, sizeOfInputArea/2))
+				currentTyped+= inputBtns.get(0);
+			if (didMouseClick(XStart+sizeOfInputArea/2, YStart, sizeOfInputArea/2, sizeOfInputArea/2))
+				currentTyped+= inputBtns.get(1);
+			if (didMouseClick(XStart+sizeOfInputArea/2, YStart+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2))
+				currentTyped+= inputBtns.get(2);
+			if (didMouseClick(XStart, YStart+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2))
+				currentTyped+= inputBtns.get(3);
+			displayType = -1;
+			return;
+		}
+
+		if (didMouseClick(XStart, YStart, sizeOfInputArea/2, keyPadMargin))
+		{
+			displayType = 0;
+		}
+
+		else if (didMouseClick(XStart + sizeOfInputArea/2 , YStart, sizeOfInputArea/2, keyPadMargin))
+		{
+			displayType = 1;
+		}
+
+		else if (didMouseClick(XStart +sizeOfInputArea -keyPadMargin , 240, keyPadMargin, (sizeOfInputArea -2*keyPadMargin)/2))
+		{
+			displayType = 2;
+		}
+
+		else if (didMouseClick(XStart +sizeOfInputArea -keyPadMargin , 240 + (sizeOfInputArea -2*keyPadMargin)/2 , keyPadMargin, (sizeOfInputArea -2*keyPadMargin)/2))
+		{
+			displayType = 3;
+		}
+
+		else if (didMouseClick(XStart, YStart + sizeOfInputArea - keyPadMargin, sizeOfInputArea/2, keyPadMargin))
+		{
+			displayType = 4;
+		}
+
+		else if (didMouseClick(XStart+sizeOfInputArea/2, YStart + sizeOfInputArea - keyPadMargin, sizeOfInputArea/2, keyPadMargin))
+		{
+			displayType = 5;
+		}
+
+		else if (didMouseClick(XStart ,240, keyPadMargin, (sizeOfInputArea -2*keyPadMargin)/2))
+		{
+			displayType = 6;
+		}
+
+		else if (didMouseClick(XStart ,240+ (sizeOfInputArea -80)/2, keyPadMargin,  (sizeOfInputArea -2*keyPadMargin)/2))
+		{
+			displayType = 7;
+		}
+
+		else if(didMouseClick(XStart + keyPadMargin ,YStart + keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
+		{
+			replaceWord(suggestedWords.get(0));
+		}
+		else if(didMouseClick(XStart + keyPadMargin ,YStart + 2*keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
+		{
+			replaceWord(suggestedWords.get(1));
+		}
+		else if(didMouseClick(XStart + keyPadMargin ,YStart + 120, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
+		{
+			replaceWord(suggestedWords.get(2));
+		}
+
+		if (didMouseClick(600, 00, 150, 150)) //check if click is in next button
+		{
+			nextTrial(); //if so, advance to next trial
+		}
+	}
+
+
+	private void replaceWord(String suggestedWord) {
+
+		int index = currentTyped.lastIndexOf(" ");
+		if(index==-1)
+			currentTyped = suggestedWord+ " ";
+		else
+			currentTyped = currentTyped.substring(0, index) + " " + suggestedWord + " ";
+	}
+
+
+	private void drawKeyPad(int index) {
+
+		int keyGroupIndex = index/2;
+
+		fill(255);
+		textFont(createFont("Arial", 36));
+		textAlign(CENTER);
+
+		KeyGroup keyGroup = keyPad.keyGroups.get(keyGroupIndex);
+
+		inputBtns = new ArrayList<String>(); 
+
+		if(index%2==0)
+		{
+			inputBtns.add(keyGroup.keys.get(0).c);
+			inputBtns.add(keyGroup.keys.get(1).c);
+			inputBtns.add(keyGroup.keys.get(2).c);
+			inputBtns.add(keyGroup.keys.get(3).c);
+		}
+		else
+		{
+			int lastIndex = keyGroup.keys.size() -1 ;
+			inputBtns.add(keyGroup.keys.get(lastIndex-3).c);
+			inputBtns.add(keyGroup.keys.get(lastIndex-2).c);
+			inputBtns.add(keyGroup.keys.get(lastIndex-1).c);
+			inputBtns.add(keyGroup.keys.get(lastIndex).c);
+		}
+
+		drawCell(inputBtns);
+
+	}
+
+	private void drawCell(ArrayList<String> inputBtns)
+	{
+		textFont(createFont("Arial", 40));
+
+		strokeWeight(4);
+		line(XStart +sizeOfInputArea/2,YStart,XStart+sizeOfInputArea/2,YStart+sizeOfInputArea);
+		line(XStart,YStart+sizeOfInputArea/2,XStart+sizeOfInputArea,YStart+sizeOfInputArea/2);
+		strokeWeight(1);
+
+
+		text(inputBtns.get(0), 175, 275);
+		text(inputBtns.get(1), 175 + sizeOfInputArea/2, 275);
+		text(inputBtns.get(2), 175+ sizeOfInputArea/2, 275+ sizeOfInputArea/2);
+		text(inputBtns.get(3), 175, 275+ sizeOfInputArea/2);
+
+
+	}
+
+
+
+	void nextTrial()
+	{
+		if (currTrialNum >= totalTrialNum) //check to see if experiment is done
+			return; //if so, just return
+
+		if (startTime!=0 && finishTime==0) //in the middle of trials
+		{
+			System.out.println("==================");
+			System.out.println("Phrase " + (currTrialNum+1) + " of " + totalTrialNum); //output
+			System.out.println("Target phrase: " + currentPhrase); //output
+			System.out.println("Phrase length: " + currentPhrase.length()); //output
+			System.out.println("User typed: " + currentTyped); //output
+			System.out.println("User typed length: " + currentTyped.length()); //output
+			System.out.println("Number of errors: " + computeLevenshteinDistance(currentTyped.trim(), currentPhrase.trim())); //trim whitespace and compute errors
+			System.out.println("Time taken on this trial: " + (millis()-lastTime)); //output
+			System.out.println("Time taken since beginning: " + (millis()-startTime)); //output
+			System.out.println("==================");
+			lettersExpectedTotal+=currentPhrase.length();
+			lettersEnteredTotal+=currentTyped.length();
+			errorsTotal+=computeLevenshteinDistance(currentTyped.trim(), currentPhrase.trim());
+		}
+
+		if (currTrialNum == totalTrialNum-1) //check to see if experiment just finished
+		{
+			finishTime = millis();
+			System.out.println("==================");
+			System.out.println("Trials complete!"); //output
+			System.out.println("Total time taken: " + (finishTime - startTime)); //output
+			System.out.println("Total letters entered: " + lettersEnteredTotal); //output
+			System.out.println("Total letters expected: " + lettersExpectedTotal); //output
+			System.out.println("Total errors entered: " + errorsTotal); //output
+			System.out.println("WPM: " + (lettersEnteredTotal/5.0f)/((finishTime - startTime)/60000f)); //output
+			System.out.println("==================");
+			currTrialNum++; //increment by one so this mesage only appears once when all trials are done
+			return;
+		}
+
+		if (startTime==0) //first trial starting now
+		{
+			System.out.println("Trials beginning! Starting timer..."); //output we're done
+			startTime = millis(); //start the timer!
+		}
+		else
+		{
+			currTrialNum++; //increment trial number
+		}
+
+		lastTime = millis(); //record the time of when this trial ended
+		currentTyped = ""; //clear what is currently typed preparing for next trial
+		currentPhrase = phrases[currTrialNum]; // load the next phrase!
+		//currentPhrase = "abc"; // uncomment this to override the test phrase (useful for debugging)
+	}
+
+
+
+
+	//=========SHOULD NOT NEED TO TOUCH THIS METHOD AT ALL!==============
+	int computeLevenshteinDistance(String phrase1, String phrase2) //this computers error between two strings
+	{
+		int[][] distance = new int[phrase1.length() + 1][phrase2.length() + 1];
+
+		for (int i = 0; i <= phrase1.length(); i++)
+			distance[i][0] = i;
+		for (int j = 1; j <= phrase2.length(); j++)
+			distance[0][j] = j;
+
+		for (int i = 1; i <= phrase1.length(); i++)
+			for (int j = 1; j <= phrase2.length(); j++)
+				distance[i][j] = min(min(distance[i - 1][j] + 1, distance[i][j - 1] + 1), distance[i - 1][j - 1] + ((phrase1.charAt(i - 1) == phrase2.charAt(j - 1)) ? 0 : 1));
+
+		return distance[phrase1.length()][phrase2.length()];
+	}
+}
 
 
 class KeyPad
 {
-  ArrayList<KeyGroup> keyGroups;
+	ArrayList<KeyGroup> keyGroups;
 
-  public KeyPad()
-  {
-    keyGroups = new ArrayList<KeyGroup>();
-  }
+	public KeyPad()
+	{
+		keyGroups = new ArrayList<KeyGroup>();
+	}
 
 }
 class KeyGroup
 {
-  int x = 0;
-  int y =0;
-  int height = 0;
-  int width = 0;
-  ArrayList<Key> keys;
+	int x = 0;
+	int y =0;
+	int height = 0;
+	int width = 0;
+	ArrayList<Key> keys;
 
-  public KeyGroup(int x,int y,int height,int width)
-  {
-    this.x = x;
-    this.y = y;
-    this.height = height;
-    this.width = width;
-    this.keys = new ArrayList<Key>(); 
-  }
+	public KeyGroup(int x,int y,int height,int width)
+	{
+		this.x = x;
+		this.y = y;
+		this.height = height;
+		this.width = width;
+		this.keys = new ArrayList<Key>(); 
+	}
 }
 
 class Key
 {
-  String c;
+	String c;
 
-  public Key(String c) 
-  {
-    this.c = c;
-  }
+	public Key(String c) 
+	{
+		this.c = c;
+	}
+}
 
+class WordFreq
+{
+	String word;
+	Long freq;
+	
+	public WordFreq(String word,Long freq)
+	{
+		this.word = word;
+		this.freq = freq;
+	}
 
+}
 
+class WordFreqComparator implements Comparator<WordFreq> {
+	@Override
+	public int compare(WordFreq o1, WordFreq o2) {
+		//return Long.compare(o.freq, this.freq);
+
+		if(o2.freq > o1.freq)
+			return 1;
+		if(o2.freq == o1.freq)
+			return 0;
+		else
+			return -1;
+	}
 }
