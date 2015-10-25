@@ -220,7 +220,7 @@ import java.util.TreeMap;
       else 
         break;
     }
-
+    Collections.sort(suggestions, new WordFreqComparator());
     return suggestions;
   }
 
@@ -239,7 +239,7 @@ import java.util.TreeMap;
 
     if(tokens.length==1)
       suggestions = getSuggestions(tokens[tokens.length-1],unigramMap,false);
-    else
+    else if(tokens.length>1)
     {
       suggestions = getSuggestions(tokens[tokens.length-2] +" "+ tokens[tokens.length-1],bigramMap,true);
 
@@ -253,7 +253,6 @@ import java.util.TreeMap;
 
 
   private void addTopSuggestions(ArrayList<WordFreq> suggestions) {
-    Collections.sort(suggestions, new WordFreqComparator());
 
     suggestedWords.add("the");
     suggestedWords.add("of");
