@@ -217,7 +217,7 @@ public class MainActivity extends processing.core.PApplet {
 			text("Phrase " + (currTrialNum+1) + " of " + totalTrialNum, 70, 50); //draw the trial count
 			fill(255);
 			text("Target:   " + currentPhrase, 70, 100); //draw the target string
-			text("Entered: " + currentTyped, 70, 140); //draw what the user has entered thus far 
+			text("Entered: " + currentTyped+"|", 70, 140); //draw what the user has entered thus far 
 			fill(255, 0, 0);
 			rect(600, 00, 150, 150); //drag next button
 			fill(255);
@@ -257,7 +257,7 @@ public class MainActivity extends processing.core.PApplet {
 		ArrayList<WordFreq> suggestions = new ArrayList<WordFreq>();
 		if(currentTyped==null || "".equals(currentTyped))
 		{
-			suggestions = getSuggestions("",unigramMap,false);
+			//suggestions = getSuggestions("",unigramMap,false);
 			addTopSuggestions(suggestions);
 			return;
 		}
@@ -378,13 +378,15 @@ public class MainActivity extends processing.core.PApplet {
 		{
 			if(inputBtns.size()==4)
 			{
+				int radius = 250;
+				int indent = 70;
 				if (didMouseClick(XStart, YStart, sizeOfInputArea/2, sizeOfInputArea/2))
 					currentTyped+= inputBtns.get(0);
 				if (didMouseClick(XStart+sizeOfInputArea/2, YStart, sizeOfInputArea/2, sizeOfInputArea/2))
 					currentTyped+= inputBtns.get(1);
-				if (didMouseClick(XStart+sizeOfInputArea/2, YStart+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2))
-					currentTyped+= inputBtns.get(2);
 				if (didMouseClick(XStart, YStart+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2))
+					currentTyped+= inputBtns.get(2);
+				if (didMouseClick(XStart+sizeOfInputArea/2, YStart+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2))
 					currentTyped+= inputBtns.get(3);
 			}
 			else
@@ -404,69 +406,72 @@ public class MainActivity extends processing.core.PApplet {
 			}
 			displayType = -1;
 			recommendWords();
-			return;
-		}
 
-		if (didMouseClick(XStart, YStart, sizeOfInputArea/3, sizeOfInputArea/3))
-		{
-			displayType = 0;
 		}
-
-		else if (didMouseClick(XStart + (sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
-		{
-			System.out.print("fuck");
-			displayType = 1;
-		}
-
-		else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
-		{
-			//fill(0, 255, 0, 70);
-			//rect(XStart + (sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3);
-			displayType = 2;
-		}
-
-		else if (didMouseClick(XStart,  YStart + (sizeOfInputArea/3), sizeOfInputArea/3,sizeOfInputArea/3))
+		else
 		{
 
-			displayType = 3;
-		}
+			if (didMouseClick(XStart, YStart, sizeOfInputArea/3, sizeOfInputArea/3))
+			{
+				displayType = 0;
+			}
 
-		else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart + (sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
-		{
-			displayType = 4;
-		}
+			else if (didMouseClick(XStart + (sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
+			{
+				System.out.print("fuck");
+				displayType = 1;
+			}
 
-		else if (didMouseClick(XStart,  YStart + 2*(sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
-		{
-			displayType = 5;
-		}
+			else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
+			{
+				//fill(0, 255, 0, 70);
+				//rect(XStart + (sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3);
+				displayType = 2;
+			}
 
-		else if (didMouseClick(XStart ,240, keyPadMargin, (sizeOfInputArea -2*keyPadMargin)/2))
-		{
-			displayType = 6;
-		}
+			else if (didMouseClick(XStart,  YStart + (sizeOfInputArea/3), sizeOfInputArea/3,sizeOfInputArea/3))
+			{
 
-		else if (didMouseClick(XStart ,240+ (sizeOfInputArea -80)/2, keyPadMargin,  (sizeOfInputArea -2*keyPadMargin)/2))
-		{
-			displayType = 7;
-		}
+				displayType = 3;
+			}
 
-		else if(didMouseClick(XStart + keyPadMargin ,YStart + keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
-		{
-			replaceWord(suggestedWords.get(0));
-		}
-		else if(didMouseClick(XStart + keyPadMargin ,YStart + 2*keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
-		{
-			replaceWord(suggestedWords.get(1));
-		}
-		else if(didMouseClick(XStart + keyPadMargin ,YStart + 120, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
-		{
-			replaceWord(suggestedWords.get(2));
-		}
+			else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart + (sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
+			{
+				displayType = 4;
+			}
 
-		if (didMouseClick(600, 00, 150, 150)) //check if click is in next button
-		{
-			nextTrial(); //if so, advance to next trial
+			else if (didMouseClick(XStart,  YStart + 2*(sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
+			{
+				displayType = 5;
+			}
+
+			else if (didMouseClick(XStart ,240, keyPadMargin, (sizeOfInputArea -2*keyPadMargin)/2))
+			{
+				displayType = 6;
+			}
+
+			else if (didMouseClick(XStart ,240+ (sizeOfInputArea -80)/2, keyPadMargin,  (sizeOfInputArea -2*keyPadMargin)/2))
+			{
+				displayType = 7;
+			}
+
+			else if(didMouseClick(XStart + keyPadMargin ,YStart + keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
+			{
+				replaceWord(suggestedWords.get(0));
+			}
+			else if(didMouseClick(XStart + keyPadMargin ,YStart + 2*keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
+			{
+				replaceWord(suggestedWords.get(1));
+			}
+			else if(didMouseClick(XStart + keyPadMargin ,YStart + 120, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
+			{
+				replaceWord(suggestedWords.get(2));
+			}
+
+			if (didMouseClick(600, 00, 150, 150)) //check if click is in next button
+			{
+				nextTrial(); //if so, advance to next trial
+			}
 		}
 	}
 
