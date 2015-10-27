@@ -30,8 +30,8 @@ public class MainActivity extends processing.core.PApplet {
 	String currentTyped = ""; //what the user has typed so far
 	//final int DPIofYourDeviceScreen = 441; //you will need to look up the DPI or PPI of your device to make sure you get the right scale!!
 
-	//final int DPIofYourDeviceScreen = 294; //Moto G
-	final int DPIofYourDeviceScreen = 577; //Moto G
+	final int DPIofYourDeviceScreen = 294; //Moto G
+	//final int DPIofYourDeviceScreen = 577; //Moto G
 	//http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
 	final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
 	KeyPad keyPad;
@@ -50,12 +50,24 @@ public class MainActivity extends processing.core.PApplet {
 
 	TreeMap<String,Long> unigramMap = new TreeMap<String,Long>();
 	TreeMap<String,Long> bigramMap = new TreeMap<String,Long>();
+	
+	PImage backSpaceBtnImage;
+	PImage spaceBarBtnImage;
+
 
 
 	//You can modify anything in here. This is just a basic implementation.
 	public void setup()
 	{
 		phrases = loadStrings("phrases2.txt"); //load the phrase set into memory
+		
+		backSpaceBtnImage = loadImage("backspace.png");
+		backSpaceBtnImage.height = 50;
+		backSpaceBtnImage.width = 50;
+		spaceBarBtnImage = loadImage("spacebar.png");
+		spaceBarBtnImage.height = 50;
+		spaceBarBtnImage.width = 50;
+		
 		Collections.shuffle(Arrays.asList(phrases)); //randomize the order of the phrases
 
 		loadUnigramFreq();
@@ -154,9 +166,7 @@ public class MainActivity extends processing.core.PApplet {
 	//You can modify anything in here. This is just a basic implementation.
 	public void draw()
 	{
-
-
-
+		
 		background(0); //clear background
 
 		// image(watch,-200,200);
@@ -222,8 +232,8 @@ public class MainActivity extends processing.core.PApplet {
 			rect(600, 00, 150, 150); //drag next button
 			fill(255);
 			text("NEXT > ", 610, 75); //draw next label
-
 		}
+		
 	}
 
 
@@ -264,7 +274,9 @@ public class MainActivity extends processing.core.PApplet {
 
 		String[] tokens = currentTyped.split(" ");
 
-		if(tokens.length==1)
+		if(tokens.length==0)
+			addTopSuggestions(suggestions);
+		else if(tokens.length==1)
 			suggestions = getSuggestions(tokens[tokens.length-1],unigramMap,false);
 		else
 		{
@@ -300,6 +312,7 @@ public class MainActivity extends processing.core.PApplet {
 
 	private void drawKeyBoard() {
 
+		
 		fill(0);
 
 		textFont(createFont("Arial", 40));
@@ -343,6 +356,12 @@ public class MainActivity extends processing.core.PApplet {
 		text(suggestedWords.get(0),XStart + 150,YStart + 75);
 		text(suggestedWords.get(1),XStart + 150,YStart + 115);
 		text(suggestedWords.get(2),XStart + 150,YStart + 155);
+		
+		
+		textFont(createFont("Arial", 55));
+		text("\u232B", XStart + sizeOfInputArea -50, YStart + sizeOfInputArea -20);
+		textFont(createFont("Arial", 200));
+		text("\u2423", XStart + sizeOfInputArea/2, YStart + sizeOfInputArea -50);
 
 
 	}
@@ -424,8 +443,6 @@ public class MainActivity extends processing.core.PApplet {
 
 			else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
 			{
-				//fill(0, 255, 0, 70);
-				//rect(XStart + (sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3);
 				displayType = 2;
 			}
 
@@ -453,6 +470,14 @@ public class MainActivity extends processing.core.PApplet {
 			else if (didMouseClick(XStart ,240+ (sizeOfInputArea -80)/2, keyPadMargin,  (sizeOfInputArea -2*keyPadMargin)/2))
 			{
 				displayType = 7;
+			}
+			else if (didMouseClick(XStart +sizeOfInputArea/3 ,YStart +2*sizeOfInputArea/3, sizeOfInputArea/3,  sizeOfInputArea/3))
+			{
+				currentTyped+=" "; 
+			}
+			else if (didMouseClick(XStart +2*sizeOfInputArea/3 ,YStart +2*sizeOfInputArea/3, sizeOfInputArea/3,  sizeOfInputArea/3))
+			{
+				currentTyped = currentTyped.substring(0,currentTyped.length()-1);
 			}
 
 			else if(didMouseClick(XStart + keyPadMargin ,YStart + keyPadMargin, sizeOfInputArea - 2*keyPadMargin, keyPadMargin))
