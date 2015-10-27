@@ -15,7 +15,7 @@ import processing.core.*;
 
 
 
-
+//public class MainActivity extends processing.core.PApplet { //PApplet in fact extends android.app.Activity
   String[] phrases; //contains all of the phrases
   int totalTrialNum = 4; //the total number of phrases to be tested - set this low for testing. Might be ~10 for the real bakeoff!
   int currTrialNum = 0; // the current trial number (indexes into trials array above)
@@ -104,7 +104,7 @@ import processing.core.*;
     keyGroup.keys.add(new Key("d"));
     keyPad.keyGroups.add(keyGroup);
 
-    
+
 
     keyGroup = new KeyGroup((int)sizeOfInputArea/2+70,250);
     keyGroup.keys.add(new Key("e"));
@@ -163,12 +163,12 @@ import processing.core.*;
 
     if(displayType==-1)
     {
-     // rect(XStart + keyPadMargin, YStart + keyPadMargin, sizeOfInputArea-2*keyPadMargin, sizeOfInputArea-2*keyPadMargin);
+      // rect(XStart + keyPadMargin, YStart + keyPadMargin, sizeOfInputArea-2*keyPadMargin, sizeOfInputArea-2*keyPadMargin);
       recommendWords();
       if (startTime!=0)
         drawKeyBoard();
       fill(255);
-   
+
 
     }
     else
@@ -217,7 +217,7 @@ import processing.core.*;
 
   private ArrayList<WordFreq> getSuggestions(String prefix, TreeMap<String,Long> ngramMap,boolean isBigram)
   {
-   
+
     ArrayList<WordFreq> suggestions = new ArrayList<WordFreq>();
     SortedMap<String, Long> tailMap = ngramMap.tailMap(prefix);
 
@@ -241,7 +241,7 @@ import processing.core.*;
   }
 
 
- private void recommendWords() {
+  private void recommendWords() {
     suggestedWords.clear();
     ArrayList<WordFreq> suggestions = new ArrayList<WordFreq>();
     if(currentTyped==null || "".equals(currentTyped))
@@ -271,7 +271,7 @@ import processing.core.*;
 
   }
 
- 
+
 
 
   private void addTopSuggestions(ArrayList<WordFreq> suggestions) {
@@ -305,12 +305,12 @@ import processing.core.*;
     {  
       if(keyGroup.keys.size()==4)
       {
-            fill(255,153,153);
-            int radius = 140;
-              int indent = 70;
-           ellipse(keyGroup.x + 28,keyGroup.y+20, radius, radius);
+        fill(255,153,153);
+        int radius = 140;
+        int indent = 70;
+        ellipse(keyGroup.x + 28,keyGroup.y+20, radius, radius);
 
-      fill(0,0,0);
+        fill(0,0,0);
         text(keyGroup.keys.get(0).c, keyGroup.x, keyGroup.y);
         text(keyGroup.keys.get(1).c, keyGroup.x + 60, keyGroup.y);
         text(keyGroup.keys.get(2).c, keyGroup.x,keyGroup.y +60);
@@ -322,11 +322,11 @@ import processing.core.*;
       if(keyGroup.keys.size()==6)
       {
         fill(255,153,153);
-            int radius = 140;
-              int indent = 70;
-           ellipse(keyGroup.x + marg,keyGroup.y+marg/2 -10, 1.5*radius, 0.75*radius);
-           
-              fill(0);
+        int radius = 140;
+        int indent = 70;
+        ellipse(keyGroup.x + marg,keyGroup.y+marg/2 -10, 1.5f*radius, 0.75f*radius);
+
+        fill(0);
 
         text(keyGroup.keys.get(0).c, keyGroup.x, keyGroup.y);
         text(keyGroup.keys.get(1).c, keyGroup.x + marg, keyGroup.y);
@@ -339,20 +339,20 @@ import processing.core.*;
     }
 
     //Suggested Words
-     fill(0);
-     
-    float w = (sizeOfInputArea *(.475));
+    fill(0);
+
+    float w = (sizeOfInputArea *(0.475f));
     rect(XStart +keyPadMargin, YStart + 150, w, 2*keyPadMargin/3);
-        fill(51,51,51);
+    fill(51,51,51);
 
     rect(XStart + keyPadMargin , YStart + 150 + 2*keyPadMargin/3, w, 2*keyPadMargin/3);
 
-     fill(0);
+    fill(0);
 
     rect(XStart + keyPadMargin , YStart + 150 + 4*keyPadMargin/3, w, 2*keyPadMargin/3);
-        fill(51,51,51);
+    fill(51,51,51);
 
-   // rect(XStart + keyPadMargin , YStart + 375, w, keyPadMargin/2);
+    // rect(XStart + keyPadMargin , YStart + 375, w, keyPadMargin/2);
 
     textAlign(CENTER);
     fill(255);
@@ -361,8 +361,8 @@ import processing.core.*;
     text(suggestedWords.get(2),XStart + 290,YStart + 400);
     //text(suggestedWords.get(3),XStart + 290,YStart + 425);
 
-fill(0);
-textFont(createFont("Arial", 100));
+    fill(0);
+    textFont(createFont("Arial", 100));
     text("\u232B", XStart + sizeOfInputArea -70, YStart + sizeOfInputArea -20);
     textFont(createFont("Arial", 300));
     text("\u2423", XStart + sizeOfInputArea/2+20, YStart + sizeOfInputArea -50);
@@ -375,21 +375,28 @@ textFont(createFont("Arial", 100));
 
   public void mouseReleased()
   {
-   
-    }
 
-  
+  }
+
+
   public void mousePressed()
   {
 
     touchX = mouseX;
     touchY = mouseY;
-    float w = (sizeOfInputArea *(.475));
+    float w = (sizeOfInputArea *(0.475f));
 
 
 
     if(displayType!=-1)
     {
+      if(didMouseClick(XStart +sizeOfInputArea/2 -50, YStart +sizeOfInputArea/2 -50, 100, 100))
+      {
+        displayType = -1;
+        return;
+      }
+      
+      
       if(inputBtns.size()==4)
       {
         if (didMouseClick(XStart, YStart, sizeOfInputArea/2, sizeOfInputArea/2))
@@ -418,81 +425,81 @@ textFont(createFont("Arial", 100));
       }
       displayType = -1;
       recommendWords();
-      
+
     }
     else
     {
-      
-       if(didMouseClick(XStart +keyPadMargin, YStart + 150, w, 2*keyPadMargin/3))
-    {
-      replaceWord(suggestedWords.get(0));
-    }
-    
- 
-    else if(didMouseClick(XStart +keyPadMargin, YStart + 150 + 2*keyPadMargin/3, w, 2*keyPadMargin/3))
-    {
-      replaceWord(suggestedWords.get(1));
-    }
-    else if(didMouseClick(XStart +keyPadMargin,YStart + 150 + 4*keyPadMargin/3, w, 2*keyPadMargin/3))
-    {
-      replaceWord(suggestedWords.get(2));
-    }
-    
 
-    else if (didMouseClick(XStart, YStart, sizeOfInputArea/3, sizeOfInputArea/3))
-    {
-      displayType = 0;
-    }
+      if(didMouseClick(XStart +keyPadMargin, YStart + 150, w, 2*keyPadMargin/3))
+      {
+        replaceWord(suggestedWords.get(0));
+      }
 
-    else if (didMouseClick(XStart + (sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
-    {
-      
-      displayType = 1;
-    }
 
-    else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
-    {
+      else if(didMouseClick(XStart +keyPadMargin, YStart + 150 + 2*keyPadMargin/3, w, 2*keyPadMargin/3))
+      {
+        replaceWord(suggestedWords.get(1));
+      }
+      else if(didMouseClick(XStart +keyPadMargin,YStart + 150 + 4*keyPadMargin/3, w, 2*keyPadMargin/3))
+      {
+        replaceWord(suggestedWords.get(2));
+      }
+
+
+      else if (didMouseClick(XStart, YStart, sizeOfInputArea/3, sizeOfInputArea/3))
+      {
+        displayType = 0;
+      }
+
+      else if (didMouseClick(XStart + (sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
+      {
+
+        displayType = 1;
+      }
+
+      else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart, sizeOfInputArea/3,sizeOfInputArea/3))
+      {
         displayType = 2;
-    }
+      }
 
-    else if (didMouseClick(XStart,  YStart + (sizeOfInputArea/3), sizeOfInputArea/3,sizeOfInputArea/3))
-    {
+      else if (didMouseClick(XStart,  YStart + (sizeOfInputArea/3), sizeOfInputArea/3,sizeOfInputArea/3))
+      {
 
-      displayType = 3;
-    }
+        displayType = 3;
+      }
 
-    else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart + (sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
-    {
-      displayType = 4;
-    }
+      else if (didMouseClick(XStart + 2*(sizeOfInputArea/3),  YStart + (sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
+      {
+        displayType = 4;
+      }
 
-    else if (didMouseClick(XStart,  YStart + 2*(sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
-    {
-      displayType = 5;
-    }
+      else if (didMouseClick(XStart,  YStart + 2*(sizeOfInputArea/3), sizeOfInputArea/3, sizeOfInputArea/3))
+      {
+        displayType = 5;
+      }
 
-    else if (didMouseClick(XStart ,240, keyPadMargin, (sizeOfInputArea -2*keyPadMargin)/2))
-    {
-      displayType = 6;
-    }
+      else if (didMouseClick(XStart ,240, keyPadMargin, (sizeOfInputArea -2*keyPadMargin)/2))
+      {
+        displayType = 6;
+      }
 
-    else if (didMouseClick(XStart ,240+ (sizeOfInputArea -80)/2, keyPadMargin,  (sizeOfInputArea -2*keyPadMargin)/2))
-    {
-      displayType = 7;
-    }
-    
-    else if (didMouseClick(XStart +sizeOfInputArea/3 ,YStart +2*sizeOfInputArea/3 - 20, sizeOfInputArea*0.475,  sizeOfInputArea/3))
+      else if (didMouseClick(XStart ,240+ (sizeOfInputArea -80)/2, keyPadMargin,  (sizeOfInputArea -2*keyPadMargin)/2))
+      {
+        displayType = 7;
+      }
+
+      else if (didMouseClick(XStart +sizeOfInputArea/3 ,YStart +2*sizeOfInputArea/3 - 20, sizeOfInputArea*0.475f,  sizeOfInputArea/3))
       {
         currentTyped+=" "; 
       }
       else if (didMouseClick(XStart +2*sizeOfInputArea/3 ,YStart +2*sizeOfInputArea/3, sizeOfInputArea/3,  sizeOfInputArea/3))
       {
-        
+
         if(currentTyped.length()>0)
           currentTyped = currentTyped.substring(0,currentTyped.length()-1);
       }
     }
-   
+
 
     if (didMouseClick(600, 00, 150, 150)) //check if click is in next button
     {
@@ -524,6 +531,13 @@ textFont(createFont("Arial", 100));
 
   private void drawCell(ArrayList<String> inputBtns)
   {
+    fill(0,0,255);
+    ellipse(XStart +sizeOfInputArea/2, YStart +sizeOfInputArea/2, 100, 100);
+    fill(255, 51, 51);
+    textFont(createFont("Arial", 100));
+    text("<",XStart +sizeOfInputArea/2, YStart +sizeOfInputArea/2+35);
+    
+    
     if(inputBtns.size()==4)
     {
       textFont(createFont("Arial", 250));
